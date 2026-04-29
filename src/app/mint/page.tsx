@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/landing/Footer";
@@ -11,8 +10,16 @@ import { PixelPanel } from "@/components/ui/PixelPanel";
 import { PixelButton } from "@/components/ui/PixelButton";
 import { PixelEgg } from "@/components/PixelEgg";
 import { PixelMon } from "@/components/PixelMon";
+import { usePixelWalletModal } from "@/components/providers/PixelWalletModalProvider";
 
 const PRICE_SOL = 0.05;
+
+const STAT_MAX = {
+  hp: 160,
+  atk: 40,
+  def: 30,
+  spd: 32,
+} as const;
 
 type Phase = "idle" | "hatching" | "revealed";
 
@@ -35,6 +42,8 @@ const NAMES = [
   "Crysto",
   "Hexbun",
   "Drifo",
+  "Lumix",
+  "Boxlet",
 ];
 
 function rollMon(): Roll {
@@ -43,17 +52,17 @@ function rollMon(): Roll {
     r < 0.6 ? "common" : r < 0.9 ? "rare" : r < 0.99 ? "epic" : "legendary";
   const factor =
     rarity === "common" ? 1 : rarity === "rare" ? 1.2 : rarity === "epic" ? 1.5 : 2;
-  const roll = (lo: number, hi: number) =>
-    Math.round((lo + Math.random() * (hi - lo)) * factor);
+  const roll = (lo: number, hi: number, max: number) =>
+    Math.min(max, Math.round((lo + Math.random() * (hi - lo)) * factor));
   return {
     species: Math.floor(Math.random() * 4),
     name: `${NAMES[Math.floor(Math.random() * NAMES.length)]} #${Math.floor(
       Math.random() * 9999,
     )}`,
-    hp: roll(40, 80),
-    atk: roll(8, 18),
-    def: roll(5, 14),
-    spd: roll(6, 16),
+    hp: roll(40, 80, STAT_MAX.hp),
+    atk: roll(8, 18, STAT_MAX.atk),
+    def: roll(5, 14, STAT_MAX.def),
+    spd: roll(6, 16, STAT_MAX.spd),
     rarity,
   };
 }
@@ -67,14 +76,14 @@ const RARITY_TONE: Record<Roll["rarity"], "cyan" | "green" | "purple" | "gold"> 
 
 export default function MintPage() {
   const { connected } = useWallet();
-  const { setVisible } = useWalletModal();
+  const { open: openWallet } = usePixelWalletModal();
   const [qty, setQty] = useState(1);
   const [phase, setPhase] = useState<Phase>("idle");
   const [roll, setRoll] = useState<Roll | null>(null);
 
   function handleMint() {
     if (!connected) {
-      setVisible(true);
+      openWallet();
       return;
     }
     setPhase("hatching");
@@ -98,12 +107,12 @@ export default function MintPage() {
             <div className="inline-block font-display text-[10px] text-pix-pink uppercase tracking-widest px-3 py-2 bg-bg-elevated border-[3px] border-stroke pixel-shadow-sm">
               Mint
             </div>
-            <h1 className="font-display text-2xl sm:text-3xl mt-6 leading-tight">
+            <h1 className="font-display text-2xl sm:text-3xl text-ink mt-6 leading-tight">
               Hatch a fresh{" "}
-              <span className="text-pix-gold">Pixmon</span>.
+              <span className="text-sol-purple">Pixmon</span>.
             </h1>
             <p className="text-ink-muted text-xl mt-3 max-w-xl">
-              Each mint includes <span className="text-sol-green">4 ⚡ Energy</span>{" "}
+              Each mint includes <span className="text-sol-green-dark">4 ⚡ Energy</span>{" "}
               and <span className="text-pix-pink">1 🔑 Gacha Key</span>. Stats
               roll on hatch. Rarity is fate.
             </p>
@@ -120,7 +129,6 @@ export default function MintPage() {
               titleTone={
                 phase === "revealed" && roll ? RARITY_TONE[roll.rarity] : "purple"
               }
-              withScanlines
             >
               <div className="p-8 sm:p-12 flex items-center justify-center min-h-[360px] relative">
                 <AnimatePresence mode="wait">
@@ -149,7 +157,7 @@ export default function MintPage() {
                       >
                         <PixelEgg className="w-56 sm:w-72 drop-shadow-[6px_6px_0_#000]" />
                       </motion.div>
-                      <div className="font-display text-pix-gold text-sm uppercase tracking-widest blink">
+                      <div className="font-display text-sol-purple text-sm uppercase tracking-widest blink">
                         ✦ Hatching ✦
                       </div>
                     </motion.div>
@@ -168,7 +176,7 @@ export default function MintPage() {
                           className="w-56 sm:w-72 drop-shadow-[6px_6px_0_#000]"
                         />
                       </div>
-                      <div className="font-display text-pix-gold text-base">
+                      <div className="font-display text-ink text-base">
                         {roll.name}
                       </div>
                     </motion.div>
@@ -184,17 +192,17 @@ export default function MintPage() {
                     <div className="p-5 flex items-center justify-between gap-3">
                       <button
                         onClick={() => setQty(Math.max(1, qty - 1))}
-                        className="font-display text-xl bg-bg-elevated text-ink w-10 h-10 border-[3px] border-stroke pixel-shadow-sm pixel-press"
+                        className="font-display text-xl bg-bg-sunk text-ink w-10 h-10 border-[3px] border-stroke pixel-shadow-sm pixel-press"
                         aria-label="Decrease"
                       >
                         −
                       </button>
-                      <div className="font-display text-3xl text-pix-gold tabular-nums">
+                      <div className="font-display text-3xl text-sol-purple tabular-nums">
                         {qty}
                       </div>
                       <button
                         onClick={() => setQty(Math.min(5, qty + 1))}
-                        className="font-display text-xl bg-bg-elevated text-ink w-10 h-10 border-[3px] border-stroke pixel-shadow-sm pixel-press"
+                        className="font-display text-xl bg-bg-sunk text-ink w-10 h-10 border-[3px] border-stroke pixel-shadow-sm pixel-press"
                         aria-label="Increase"
                       >
                         +
@@ -215,7 +223,7 @@ export default function MintPage() {
                         <span>≈ 0.000005 SOL</span>
                       </div>
                       <div className="border-t-[3px] border-stroke my-3" />
-                      <div className="flex justify-between font-display text-pix-gold text-sm">
+                      <div className="flex justify-between font-display text-ink text-sm">
                         <span>Total</span>
                         <span>{(qty * PRICE_SOL).toFixed(3)} SOL</span>
                       </div>
@@ -250,10 +258,10 @@ export default function MintPage() {
                       titleTone={RARITY_TONE[roll.rarity]}
                     >
                       <ul className="p-5 space-y-3 text-lg">
-                        <Stat label="HP" value={roll.hp} />
-                        <Stat label="ATK" value={roll.atk} />
-                        <Stat label="DEF" value={roll.def} />
-                        <Stat label="SPD" value={roll.spd} />
+                        <Stat label="HP" value={roll.hp} max={STAT_MAX.hp} />
+                        <Stat label="ATK" value={roll.atk} max={STAT_MAX.atk} />
+                        <Stat label="DEF" value={roll.def} max={STAT_MAX.def} />
+                        <Stat label="SPD" value={roll.spd} max={STAT_MAX.spd} />
                       </ul>
                     </PixelPanel>
 
@@ -261,14 +269,14 @@ export default function MintPage() {
                       <div className="p-5 flex justify-around text-center">
                         <div>
                           <div className="text-3xl">⚡</div>
-                          <div className="font-display text-pix-gold text-xs mt-1">
+                          <div className="font-display text-ink text-xs mt-1">
                             +4
                           </div>
                           <div className="text-ink-muted text-base">Energy</div>
                         </div>
                         <div>
                           <div className="text-3xl">🔑</div>
-                          <div className="font-display text-pix-gold text-xs mt-1">
+                          <div className="font-display text-ink text-xs mt-1">
                             +1
                           </div>
                           <div className="text-ink-muted text-base">Key</div>
@@ -296,20 +304,22 @@ export default function MintPage() {
   );
 }
 
-function Stat({ label, value }: { label: string; value: number }) {
+function Stat({ label, value, max }: { label: string; value: number; max: number }) {
+  const pct = Math.min(100, (value / max) * 100);
   return (
     <li className="flex items-center justify-between gap-3">
       <span className="font-display text-[10px] uppercase text-ink-muted tracking-widest w-12">
         {label}
       </span>
-      <div className="flex-1 h-3 bg-bg border-[3px] border-stroke">
+      <div className="flex-1 h-3 bg-bg-sunk border-[3px] border-stroke">
         <div
           className="h-full bg-sol-green"
-          style={{ width: `${Math.min(100, (value / 100) * 100)}%` }}
+          style={{ width: `${pct}%` }}
         />
       </div>
-      <span className="font-display text-pix-gold text-xs tabular-nums w-10 text-right">
+      <span className="font-display text-ink text-xs tabular-nums w-14 text-right">
         {value}
+        <span className="text-ink-dim">/{max}</span>
       </span>
     </li>
   );

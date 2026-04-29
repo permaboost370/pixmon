@@ -1,14 +1,23 @@
 "use client";
 
-import { useMemo, type ReactNode } from "react";
-import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react";
-import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
+import { useEffect, useMemo, type ReactNode } from "react";
+import { ConnectionProvider, WalletProvider, useWallet } from "@solana/wallet-adapter-react";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { clusterApiUrl } from "@solana/web3.js";
-
-import "@solana/wallet-adapter-react-ui/styles.css";
+import { PixelWalletModalProvider } from "@/components/providers/PixelWalletModalProvider";
+import { PixelWalletModal } from "@/components/PixelWalletModal";
 
 const NETWORK = WalletAdapterNetwork.Devnet;
+
+function AutoConnectOnSelect() {
+  const { wallet, connect, connected, connecting } = useWallet();
+  useEffect(() => {
+    if (wallet && !connected && !connecting) {
+      connect().catch(() => {});
+    }
+  }, [wallet, connected, connecting, connect]);
+  return null;
+}
 
 export function WalletProviders({ children }: { children: ReactNode }) {
   const endpoint = useMemo(
@@ -19,7 +28,11 @@ export function WalletProviders({ children }: { children: ReactNode }) {
   return (
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={[]} autoConnect>
-        <WalletModalProvider>{children}</WalletModalProvider>
+        <PixelWalletModalProvider>
+          <AutoConnectOnSelect />
+          {children}
+          <PixelWalletModal />
+        </PixelWalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>
   );

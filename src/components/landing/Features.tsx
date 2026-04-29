@@ -31,7 +31,7 @@ export function Features() {
   return (
     <section className="mx-auto max-w-7xl px-4 sm:px-6 py-16">
       <div className="mb-10">
-        <div className="inline-block font-display text-[10px] text-pix-gold uppercase tracking-widest px-3 py-2 bg-bg-elevated border-[3px] border-stroke pixel-shadow-sm">
+        <div className="inline-block font-display text-[10px] text-sol-green-dark uppercase tracking-widest px-3 py-2 bg-bg-elevated border-[3px] border-stroke pixel-shadow-sm">
           The loop
         </div>
         <h2 className="font-display text-2xl sm:text-3xl text-ink mt-6 max-w-2xl leading-tight">
@@ -46,7 +46,6 @@ export function Features() {
             tone="default"
             title={f.title}
             titleTone={f.tone}
-            withScanlines
           >
             <div className="p-5 space-y-4 min-h-[180px]">
               <div className="text-4xl">{f.icon}</div>

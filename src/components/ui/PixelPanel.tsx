@@ -1,10 +1,11 @@
 import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
-type Tone = "default" | "purple" | "green" | "pink" | "gold" | "cyan";
+type Tone = "default" | "sunk" | "purple" | "green" | "pink" | "gold" | "cyan";
 
 const toneBg: Record<Tone, string> = {
   default: "bg-bg-panel",
+  sunk: "bg-bg-sunk",
   purple: "bg-sol-purple",
   green: "bg-sol-green",
   pink: "bg-pix-pink",
@@ -14,11 +15,12 @@ const toneBg: Record<Tone, string> = {
 
 const toneInk: Record<Tone, string> = {
   default: "text-ink",
-  purple: "text-ink",
-  green: "text-bg",
-  pink: "text-ink",
-  gold: "text-bg",
-  cyan: "text-bg",
+  sunk: "text-ink",
+  purple: "text-on-dark",
+  green: "text-on-light",
+  pink: "text-on-dark",
+  gold: "text-on-light",
+  cyan: "text-on-light",
 };
 
 type Props = HTMLAttributes<HTMLDivElement> & {

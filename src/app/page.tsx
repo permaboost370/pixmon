@@ -1,9 +1,11 @@
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/landing/Hero";
-import { Marquee } from "@/components/landing/Marquee";
-import { PrizePool } from "@/components/landing/PrizePool";
+import { ActivityTicker } from "@/components/landing/ActivityTicker";
+import { SamplePixmons } from "@/components/landing/SamplePixmons";
 import { Features } from "@/components/landing/Features";
 import { HowItWorks } from "@/components/landing/HowItWorks";
+import { Roadmap } from "@/components/landing/Roadmap";
+import { FAQ } from "@/components/landing/FAQ";
 import { Footer } from "@/components/landing/Footer";
 
 export default function Home() {
@@ -12,10 +14,14 @@ export default function Home() {
       <Header />
       <main className="flex-1">
         <Hero />
-        <Marquee />
-        <PrizePool />
+        <ActivityTicker />
+        <SamplePixmons />
         <Features />
         <HowItWorks />
+        <Roadmap />
+        <div id="faq">
+          <FAQ />
+        </div>
       </main>
       <Footer />
     </>

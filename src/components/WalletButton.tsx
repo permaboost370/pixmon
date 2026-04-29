@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { useWalletModal } from "@solana/wallet-adapter-react-ui";
+import { usePixelWalletModal } from "@/components/providers/PixelWalletModalProvider";
 import { PixelButton } from "@/components/ui/PixelButton";
 
 function shortAddr(addr: string) {
@@ -11,7 +11,7 @@ function shortAddr(addr: string) {
 
 export function WalletButton() {
   const { publicKey, connecting, disconnect, connected } = useWallet();
-  const { setVisible } = useWalletModal();
+  const { open } = usePixelWalletModal();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
@@ -35,10 +35,10 @@ export function WalletButton() {
     <PixelButton
       tone="cyan"
       size="sm"
-      onClick={() => setVisible(true)}
+      onClick={open}
       disabled={connecting}
     >
-      {connecting ? "…" : "Connect"}
+      {connecting ? "Connecting…" : "Connect"}
     </PixelButton>
   );
 }

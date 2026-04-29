@@ -17,10 +17,10 @@ export function ComingSoon({ tag, title, body, emoji = "🚧" }: Props) {
       <Header />
       <main className="flex-1">
         <section className="mx-auto max-w-3xl px-4 sm:px-6 py-20">
-          <PixelPanel tone="default" title={tag} titleTone="pink" withScanlines>
+          <PixelPanel tone="default" title={tag} titleTone="pink">
             <div className="p-10 sm:p-14 text-center space-y-6">
               <div className="text-6xl">{emoji}</div>
-              <h1 className="font-display text-2xl sm:text-3xl text-pix-gold leading-tight">
+              <h1 className="font-display text-2xl sm:text-3xl text-ink leading-tight">
                 {title}
               </h1>
               <p className="text-ink-muted text-xl max-w-md mx-auto leading-snug">
