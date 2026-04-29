@@ -3,6 +3,7 @@ import { Press_Start_2P, VT323 } from "next/font/google";
 import "./globals.css";
 import { WalletProviders } from "@/components/providers/WalletProviders";
 import { MobileNav } from "@/components/MobileNav";
+import { BackToTop } from "@/components/BackToTop";
 
 const pressStart = Press_Start_2P({
   variable: "--font-press-start",
@@ -51,6 +52,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <WalletProviders>
           {children}
+          <BackToTop />
           <MobileNav />
         </WalletProviders>
       </body>

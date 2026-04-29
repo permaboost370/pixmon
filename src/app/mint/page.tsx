@@ -10,6 +10,7 @@ import { PixelPanel } from "@/components/ui/PixelPanel";
 import { PixelButton } from "@/components/ui/PixelButton";
 import { PixelEgg } from "@/components/PixelEgg";
 import { PixelMon } from "@/components/PixelMon";
+import { PixelIcon } from "@/components/PixelIcon";
 import { usePixelWalletModal } from "@/components/providers/PixelWalletModalProvider";
 
 const PRICE_SOL = 0.05;
@@ -112,9 +113,15 @@ export default function MintPage() {
               <span className="text-sol-purple">Pixmon</span>.
             </h1>
             <p className="text-ink-muted text-xl mt-3 max-w-xl">
-              Each mint includes <span className="text-sol-green-dark">4 ⚡ Energy</span>{" "}
-              and <span className="text-pix-pink">1 🔑 Gacha Key</span>. Stats
-              roll on hatch. Rarity is fate.
+              Each mint includes{" "}
+              <span className="inline-flex items-center gap-1 text-sol-green-dark">
+                <PixelIcon name="bolt" className="w-4 h-4" />4 Energy
+              </span>{" "}
+              and{" "}
+              <span className="inline-flex items-center gap-1 text-pix-pink">
+                <PixelIcon name="key" className="w-4 h-4" />1 Gacha Key
+              </span>
+              . Stats roll on hatch. Rarity is fate.
             </p>
           </div>
 
@@ -266,17 +273,17 @@ export default function MintPage() {
                     </PixelPanel>
 
                     <PixelPanel tone="default" title="Starter pack" titleTone="green">
-                      <div className="p-5 flex justify-around text-center">
-                        <div>
-                          <div className="text-3xl">⚡</div>
-                          <div className="font-display text-ink text-xs mt-1">
+                      <div className="p-5 grid grid-cols-2 gap-4 text-center">
+                        <div className="bg-bg-sunk pixel-border-tight p-3 flex flex-col items-center gap-1">
+                          <PixelIcon name="bolt" className="w-10 h-10" />
+                          <div className="font-display text-ink text-xs">
                             +4
                           </div>
                           <div className="text-ink-muted text-base">Energy</div>
                         </div>
-                        <div>
-                          <div className="text-3xl">🔑</div>
-                          <div className="font-display text-ink text-xs mt-1">
+                        <div className="bg-bg-sunk pixel-border-tight p-3 flex flex-col items-center gap-1">
+                          <PixelIcon name="key" className="w-10 h-10" />
+                          <div className="font-display text-ink text-xs">
                             +1
                           </div>
                           <div className="text-ink-muted text-base">Key</div>

@@ -6,7 +6,7 @@ export default function Page() {
   return (
     <ComingSoon
       tag="Leaderboard"
-      emoji="👑"
+      icon="crown"
       title="Hall of survivors."
       body="All-time wins, current streaks, biggest payouts. Updates live from the on-chain bracket."
     />

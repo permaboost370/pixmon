@@ -5,6 +5,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { PixelButton } from "@/components/ui/PixelButton";
 import { PixelEgg } from "@/components/PixelEgg";
+import { PixelIcon } from "@/components/PixelIcon";
+import type { ReactNode } from "react";
 
 function nextResetMs() {
   const now = new Date();
@@ -77,7 +79,18 @@ export function Hero() {
 
           <div className="grid grid-cols-3 gap-3 pt-4 max-w-xl">
             <Stat label="Mint" value="0.05 SOL" tone="purple" />
-            <Stat label="Starter pack" value="4 ⚡  1 🔑" tone="green" />
+            <Stat
+              label="Starter pack"
+              tone="green"
+              value={
+                <span className="flex items-center gap-1">
+                  <PixelIcon name="bolt" className="w-4 h-4" />
+                  <span>4</span>
+                  <PixelIcon name="key" className="w-4 h-4 ml-2" />
+                  <span>1</span>
+                </span>
+              }
+            />
             <Stat label="Next arena" value={fmt(ms)} tone="pink" mono />
           </div>
         </motion.div>
@@ -111,7 +124,7 @@ export function Hero() {
 
 type StatProps = {
   label: string;
-  value: string;
+  value: ReactNode;
   tone: "purple" | "green" | "pink";
   mono?: boolean;
 };

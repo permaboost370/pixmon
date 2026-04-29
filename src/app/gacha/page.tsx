@@ -6,7 +6,7 @@ export default function Page() {
   return (
     <ComingSoon
       tag="Gacha"
-      emoji="🎲"
+      icon="dice"
       title="Pull weapons, charms, relics."
       body="Burn a Key, get a random item with weighted rarities. Flat + percent bonuses. Animated reveal incoming."
     />

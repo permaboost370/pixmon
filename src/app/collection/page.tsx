@@ -6,7 +6,7 @@ export default function Page() {
   return (
     <ComingSoon
       tag="Collection"
-      emoji="📦"
+      icon="box"
       title="Your Pixmons live here."
       body="Once the program goes live you'll see every Pixmon you own — stats, equipped gear, evolution status, battle history."
     />

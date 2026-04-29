@@ -1,27 +1,35 @@
 import { PixelPanel } from "@/components/ui/PixelPanel";
+import { PixelIcon, type IconName } from "@/components/PixelIcon";
 
-const FEATURES = [
+type Feat = {
+  tone: "purple" | "green" | "pink" | "cyan";
+  icon: IconName;
+  title: string;
+  body: string;
+};
+
+const FEATURES: Feat[] = [
   {
-    tone: "purple" as const,
-    icon: "🥚",
+    tone: "purple",
+    icon: "egg",
     title: "Mint",
     body: "Buy a fresh Pixmon NFT for 0.05 SOL. Each comes with 4 Energy and 1 Gacha Key. New ones drop at random rarities.",
   },
   {
-    tone: "green" as const,
-    icon: "⚡",
+    tone: "green",
+    icon: "bolt",
     title: "Evolve",
     body: "Burn Energy to evolve your Pixmon — once. Stat boosts roll randomly: more energy spent, bigger swing.",
   },
   {
-    tone: "pink" as const,
-    icon: "🎲",
+    tone: "pink",
+    icon: "dice",
     title: "Gacha",
     body: "Spend Keys to pull weapons, charms and relics. Rare drops grant flat + percent bonuses. Stack them, lose them never.",
   },
   {
-    tone: "cyan" as const,
-    icon: "⚔️",
+    tone: "cyan",
+    icon: "sword",
     title: "Arena",
     body: "Daily on-chain elimination. Equip your Pixmon, lock it in before reset, survive the bracket. Top survivors split the pool.",
   },
@@ -48,7 +56,9 @@ export function Features() {
             titleTone={f.tone}
           >
             <div className="p-5 space-y-4 min-h-[180px]">
-              <div className="text-4xl">{f.icon}</div>
+              <div className="bg-bg-sunk pixel-border-tight w-16 h-16 flex items-center justify-center">
+                <PixelIcon name={f.icon} className="w-10 h-10" />
+              </div>
               <p className="text-ink-muted text-lg leading-snug">{f.body}</p>
             </div>
           </PixelPanel>

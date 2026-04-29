@@ -3,15 +3,16 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/landing/Footer";
 import { PixelPanel } from "@/components/ui/PixelPanel";
 import { PixelButton } from "@/components/ui/PixelButton";
+import { PixelIcon, type IconName } from "@/components/PixelIcon";
 
 type Props = {
   tag: string;
   title: string;
   body: string;
-  emoji?: string;
+  icon?: IconName;
 };
 
-export function ComingSoon({ tag, title, body, emoji = "🚧" }: Props) {
+export function ComingSoon({ tag, title, body, icon = "construction" }: Props) {
   return (
     <>
       <Header />
@@ -19,7 +20,9 @@ export function ComingSoon({ tag, title, body, emoji = "🚧" }: Props) {
         <section className="mx-auto max-w-3xl px-4 sm:px-6 py-20">
           <PixelPanel tone="default" title={tag} titleTone="pink">
             <div className="p-10 sm:p-14 text-center space-y-6">
-              <div className="text-6xl">{emoji}</div>
+              <div className="mx-auto bg-bg-sunk pixel-border-tight w-24 h-24 flex items-center justify-center">
+                <PixelIcon name={icon} className="w-16 h-16" />
+              </div>
               <h1 className="font-display text-2xl sm:text-3xl text-ink leading-tight">
                 {title}
               </h1>
