@@ -90,6 +90,26 @@ img, svg, .pixel {
   box-shadow: 0 0 0 0 var(--color-stroke);
 }
 
+button:not(:disabled),
+a,
+summary,
+[role="button"],
+[role="link"],
+label[for],
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+input[type="checkbox"],
+input[type="radio"],
+select {
+  cursor: pointer;
+}
+
+button:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
 button:focus-visible,
 a:focus-visible,
 [role="button"]:focus-visible {
