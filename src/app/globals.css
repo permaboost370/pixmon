@@ -157,8 +157,90 @@ a:focus-visible,
 }
 .ticker-track { animation: ticker 40s linear infinite; }
 
+@keyframes holo-shift {
+  0%   { background-position: 0% 0%, 0% 0%; }
+  50%  { background-position: 100% 50%, 50% 100%; }
+  100% { background-position: 0% 0%, 0% 0%; }
+}
+
+@keyframes holo-sheen {
+  0%   { transform: translateX(-120%) skewX(-18deg); }
+  100% { transform: translateX(220%) skewX(-18deg); }
+}
+
+@keyframes holo-rainbow {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+@keyframes spark-twinkle {
+  0%, 100% { opacity: 0; transform: scale(0.6); }
+  50%      { opacity: 1; transform: scale(1); }
+}
+
+.holo-surface {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.holo-rainbow {
+  background: linear-gradient(
+    115deg,
+    #ff2e88 0%,
+    #ffb700 18%,
+    #14f195 38%,
+    #5ee7ff 58%,
+    #9945ff 80%,
+    #ff2e88 100%
+  );
+  background-size: 200% 200%;
+  animation: holo-rainbow 6s linear infinite;
+}
+
+.holo-sheen-band {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 65%
+  );
+  mix-blend-mode: overlay;
+  animation: holo-sheen 4.5s ease-in-out infinite;
+}
+
+.holo-grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.08) 0 2px,
+    transparent 2px 4px
+  );
+  mix-blend-mode: overlay;
+}
+
+.holo-spark {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #fffaec;
+  box-shadow:
+     0 -3px 0 #fffaec,
+     0  3px 0 #fffaec,
+    -3px 0 0 #fffaec,
+     3px 0 0 #fffaec;
+  animation: spark-twinkle 2.4s ease-in-out infinite;
+  pointer-events: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .blink, .bob, .wiggle, .ticker-track {
+  .blink, .bob, .wiggle, .ticker-track,
+  .holo-rainbow, .holo-sheen-band, .holo-spark {
     animation: none;
   }
 }

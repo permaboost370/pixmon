@@ -9,8 +9,8 @@ import { Footer } from "@/components/landing/Footer";
 import { PixelPanel } from "@/components/ui/PixelPanel";
 import { PixelButton } from "@/components/ui/PixelButton";
 import { PixelEgg } from "@/components/PixelEgg";
-import { PixelMon } from "@/components/PixelMon";
 import { PixelIcon } from "@/components/PixelIcon";
+import { PixmonCard } from "@/components/PixmonCard";
 import { usePixelWalletModal } from "@/components/providers/PixelWalletModalProvider";
 
 const PRICE_SOL = 0.05;
@@ -27,6 +27,7 @@ type Phase = "idle" | "hatching" | "revealed";
 type Roll = {
   species: number;
   name: string;
+  number: number;
   hp: number;
   atk: number;
   def: number;
@@ -57,9 +58,8 @@ function rollMon(): Roll {
     Math.min(max, Math.round((lo + Math.random() * (hi - lo)) * factor));
   return {
     species: Math.floor(Math.random() * 4),
-    name: `${NAMES[Math.floor(Math.random() * NAMES.length)]} #${Math.floor(
-      Math.random() * 9999,
-    )}`,
+    name: NAMES[Math.floor(Math.random() * NAMES.length)],
+    number: Math.floor(Math.random() * 9999) + 1,
     hp: roll(40, 80, STAT_MAX.hp),
     atk: roll(8, 18, STAT_MAX.atk),
     def: roll(5, 14, STAT_MAX.def),
@@ -172,20 +172,18 @@ export default function MintPage() {
                   {phase === "revealed" && roll && (
                     <motion.div
                       key="mon"
-                      initial={{ opacity: 0, y: 20, scale: 0.7 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      transition={{ type: "spring", stiffness: 240, damping: 18 }}
-                      className="flex flex-col items-center gap-4"
+                      initial={{ opacity: 0, rotateY: 90, scale: 0.6 }}
+                      animate={{ opacity: 1, rotateY: 0, scale: 1 }}
+                      transition={{ type: "spring", stiffness: 180, damping: 18 }}
+                      style={{ transformStyle: "preserve-3d" }}
                     >
-                      <div className="bob">
-                        <PixelMon
-                          species={roll.species}
-                          className="w-56 sm:w-72 drop-shadow-[6px_6px_0_#000]"
-                        />
-                      </div>
-                      <div className="font-display text-ink text-base">
-                        {roll.name}
-                      </div>
+                      <PixmonCard
+                        species={roll.species}
+                        name={`${roll.name} #${roll.number}`}
+                        number={roll.number}
+                        rarity={roll.rarity}
+                        size="lg"
+                      />
                     </motion.div>
                   )}
                 </AnimatePresence>

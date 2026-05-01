@@ -1,77 +1,54 @@
-import { PixelMon } from "@/components/PixelMon";
+import { PixmonCard, type Rarity } from "@/components/PixmonCard";
 
-const NAMES = [
-  "Glommer",
-  "Sprigly",
-  "Volti",
-  "Mogworm",
-  "Pixet",
-  "Crysto",
-  "Hexbun",
-  "Drifo",
-  "Lumix",
-  "Boxlet",
-  "Vyrr",
-  "Embo",
-];
-
-const RARITY: Array<"common" | "rare" | "epic" | "legendary"> = [
-  "common", "rare", "common", "rare",
-  "epic", "common", "rare", "common",
-  "legendary", "epic", "rare", "common",
-];
-
-const RARITY_BORDER: Record<(typeof RARITY)[number], string> = {
-  common: "bg-bg-elevated",
-  rare: "bg-pix-cyan/20",
-  epic: "bg-sol-purple/20",
-  legendary: "bg-pix-gold/30",
+type Spec = {
+  name: string;
+  rarity: Rarity;
+  species: number;
+  number: number;
 };
 
-const RARITY_PILL: Record<(typeof RARITY)[number], string> = {
-  common: "text-ink-muted bg-bg-sunk",
-  rare: "text-on-light bg-pix-cyan",
-  epic: "text-on-dark bg-sol-purple",
-  legendary: "text-on-light bg-pix-gold",
-};
+const SPECS: Spec[] = [
+  { name: "Glommer",  rarity: "common",    species: 0, number: 142 },
+  { name: "Sprigly",  rarity: "rare",      species: 1, number: 318 },
+  { name: "Volti",    rarity: "common",    species: 2, number: 27 },
+  { name: "Mogworm",  rarity: "rare",      species: 3, number: 590 },
+  { name: "Pixet",    rarity: "epic",      species: 0, number: 7 },
+  { name: "Crysto",   rarity: "common",    species: 1, number: 244 },
+  { name: "Hexbun",   rarity: "rare",      species: 2, number: 81 },
+  { name: "Drifo",    rarity: "common",    species: 3, number: 412 },
+  { name: "Lumix",    rarity: "legendary", species: 0, number: 1 },
+  { name: "Boxlet",   rarity: "epic",      species: 1, number: 19 },
+  { name: "Vyrr",     rarity: "rare",      species: 2, number: 207 },
+  { name: "Embo",     rarity: "common",    species: 3, number: 333 },
+];
 
 export function SamplePixmons() {
   return (
     <section className="mx-auto max-w-7xl px-4 sm:px-6 py-16">
-      <div className="mb-8">
+      <div className="mb-10">
         <div className="inline-block font-display text-[10px] text-sol-purple uppercase tracking-widest px-3 py-2 bg-bg-elevated border-[3px] border-stroke pixel-shadow-sm">
           Specimens
         </div>
         <h2 className="font-display text-2xl sm:text-3xl text-ink mt-6 leading-tight max-w-2xl">
           Every <span className="text-sol-purple">hatch</span> rolls a fresh
-          species, palette and stat line.
+          species, palette and rarity.
         </h2>
         <p className="text-ink-muted text-xl mt-3 max-w-xl">
-          Common to legendary. Rarity nudges your stat ceiling up.
+          Common to legendary. Each lives on-chain as a holographic card.
         </p>
       </div>
 
-      <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
-        {NAMES.map((name, i) => (
-          <div
-            key={name}
-            className={`group ${RARITY_BORDER[RARITY[i]]} pixel-border-tight p-3 transition-transform hover:-translate-y-1 hover:rotate-[-1deg]`}
-          >
-            <div className="aspect-square flex items-center justify-center">
-              <PixelMon
-                species={i % 4}
-                className="w-16 sm:w-20 lg:w-24 group-hover:scale-105 transition-transform"
-              />
-            </div>
-            <div className="mt-2 font-display text-[9px] text-ink uppercase truncate">
-              {name}
-            </div>
-            <div
-              className={`mt-1 inline-block font-display text-[7px] uppercase tracking-widest px-2 py-0.5 border-[2px] border-stroke ${RARITY_PILL[RARITY[i]]}`}
-            >
-              {RARITY[i]}
-            </div>
-          </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-6 justify-items-center">
+        {SPECS.map((s) => (
+          <PixmonCard
+            key={s.name}
+            name={s.name}
+            species={s.species}
+            rarity={s.rarity}
+            number={s.number}
+            size="sm"
+            className="hover:-translate-y-1 transition-transform"
+          />
         ))}
       </div>
     </section>
