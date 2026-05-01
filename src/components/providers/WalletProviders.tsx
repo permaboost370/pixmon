@@ -6,6 +6,7 @@ import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { clusterApiUrl } from "@solana/web3.js";
 import { PixelWalletModalProvider } from "@/components/providers/PixelWalletModalProvider";
 import { PixelWalletModal } from "@/components/PixelWalletModal";
+import { GameProvider } from "@/lib/game/store";
 
 const NETWORK = WalletAdapterNetwork.Devnet;
 
@@ -30,8 +31,10 @@ export function WalletProviders({ children }: { children: ReactNode }) {
       <WalletProvider wallets={[]} autoConnect>
         <PixelWalletModalProvider>
           <AutoConnectOnSelect />
-          {children}
-          <PixelWalletModal />
+          <GameProvider>
+            {children}
+            <PixelWalletModal />
+          </GameProvider>
         </PixelWalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>

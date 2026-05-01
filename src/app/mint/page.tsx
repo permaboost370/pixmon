@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useWallet } from "@solana/wallet-adapter-react";
 
@@ -12,63 +13,14 @@ import { PixelEgg } from "@/components/PixelEgg";
 import { PixelIcon } from "@/components/PixelIcon";
 import { PixmonCard } from "@/components/PixmonCard";
 import { usePixelWalletModal } from "@/components/providers/PixelWalletModalProvider";
+import { useGame } from "@/lib/game/store";
+import type { Mon } from "@/lib/game/types";
 
 const PRICE_SOL = 0.05;
 
-const STAT_MAX = {
-  hp: 160,
-  atk: 40,
-  def: 30,
-  spd: 32,
-} as const;
-
 type Phase = "idle" | "hatching" | "revealed";
 
-type Roll = {
-  species: number;
-  name: string;
-  number: number;
-  hp: number;
-  atk: number;
-  def: number;
-  spd: number;
-  rarity: "common" | "rare" | "epic" | "legendary";
-};
-
-const NAMES = [
-  "Glommer",
-  "Sprigly",
-  "Volti",
-  "Mogworm",
-  "Pixet",
-  "Crysto",
-  "Hexbun",
-  "Drifo",
-  "Lumix",
-  "Boxlet",
-];
-
-function rollMon(): Roll {
-  const r = Math.random();
-  const rarity =
-    r < 0.6 ? "common" : r < 0.9 ? "rare" : r < 0.99 ? "epic" : "legendary";
-  const factor =
-    rarity === "common" ? 1 : rarity === "rare" ? 1.2 : rarity === "epic" ? 1.5 : 2;
-  const roll = (lo: number, hi: number, max: number) =>
-    Math.min(max, Math.round((lo + Math.random() * (hi - lo)) * factor));
-  return {
-    species: Math.floor(Math.random() * 4),
-    name: NAMES[Math.floor(Math.random() * NAMES.length)],
-    number: Math.floor(Math.random() * 9999) + 1,
-    hp: roll(40, 80, STAT_MAX.hp),
-    atk: roll(8, 18, STAT_MAX.atk),
-    def: roll(5, 14, STAT_MAX.def),
-    spd: roll(6, 16, STAT_MAX.spd),
-    rarity,
-  };
-}
-
-const RARITY_TONE: Record<Roll["rarity"], "cyan" | "green" | "purple" | "gold"> = {
+const RARITY_TONE: Record<Mon["rarity"], "cyan" | "green" | "purple" | "gold"> = {
   common: "cyan",
   rare: "green",
   epic: "purple",
@@ -78,9 +30,9 @@ const RARITY_TONE: Record<Roll["rarity"], "cyan" | "green" | "purple" | "gold"> 
 export default function MintPage() {
   const { connected } = useWallet();
   const { open: openWallet } = usePixelWalletModal();
-  const [qty, setQty] = useState(1);
+  const { mintMon } = useGame();
   const [phase, setPhase] = useState<Phase>("idle");
-  const [roll, setRoll] = useState<Roll | null>(null);
+  const [revealed, setRevealed] = useState<Mon | null>(null);
 
   function handleMint() {
     if (!connected) {
@@ -89,13 +41,14 @@ export default function MintPage() {
     }
     setPhase("hatching");
     setTimeout(() => {
-      setRoll(rollMon());
+      const mon = mintMon();
+      setRevealed(mon);
       setPhase("revealed");
     }, 2400);
   }
 
   function reset() {
-    setRoll(null);
+    setRevealed(null);
     setPhase("idle");
   }
 
@@ -129,15 +82,15 @@ export default function MintPage() {
             <PixelPanel
               tone="default"
               title={
-                phase === "revealed" && roll
-                  ? `Hatched · ${roll.rarity.toUpperCase()}`
+                phase === "revealed" && revealed
+                  ? `Hatched · ${revealed.rarity.toUpperCase()}`
                   : "Pixmon · Egg"
               }
               titleTone={
-                phase === "revealed" && roll ? RARITY_TONE[roll.rarity] : "purple"
+                phase === "revealed" && revealed ? RARITY_TONE[revealed.rarity] : "purple"
               }
             >
-              <div className="p-8 sm:p-12 flex items-center justify-center min-h-[360px] relative">
+              <div className="p-8 sm:p-12 flex items-center justify-center min-h-[420px] relative">
                 <AnimatePresence mode="wait">
                   {phase === "idle" && (
                     <motion.div
@@ -169,7 +122,7 @@ export default function MintPage() {
                       </div>
                     </motion.div>
                   )}
-                  {phase === "revealed" && roll && (
+                  {phase === "revealed" && revealed && (
                     <motion.div
                       key="mon"
                       initial={{ opacity: 0, rotateY: 90, scale: 0.6 }}
@@ -178,10 +131,11 @@ export default function MintPage() {
                       style={{ transformStyle: "preserve-3d" }}
                     >
                       <PixmonCard
-                        species={roll.species}
-                        name={`${roll.name} #${roll.number}`}
-                        number={roll.number}
-                        rarity={roll.rarity}
+                        species={revealed.species}
+                        name={`${revealed.name} #${revealed.number}`}
+                        number={revealed.number}
+                        rarity={revealed.rarity}
+                        stats={{ atk: revealed.baseAtk, def: revealed.baseDef }}
                         size="lg"
                       />
                     </motion.div>
@@ -193,35 +147,11 @@ export default function MintPage() {
             <div className="w-full lg:w-80 space-y-4">
               {phase !== "revealed" ? (
                 <>
-                  <PixelPanel tone="default" title="Quantity" titleTone="cyan">
-                    <div className="p-5 flex items-center justify-between gap-3">
-                      <button
-                        onClick={() => setQty(Math.max(1, qty - 1))}
-                        className="font-display text-xl bg-bg-sunk text-ink w-10 h-10 border-[3px] border-stroke pixel-shadow-sm pixel-press"
-                        aria-label="Decrease"
-                      >
-                        −
-                      </button>
-                      <div className="font-display text-3xl text-sol-purple tabular-nums">
-                        {qty}
-                      </div>
-                      <button
-                        onClick={() => setQty(Math.min(5, qty + 1))}
-                        className="font-display text-xl bg-bg-sunk text-ink w-10 h-10 border-[3px] border-stroke pixel-shadow-sm pixel-press"
-                        aria-label="Increase"
-                      >
-                        +
-                      </button>
-                    </div>
-                  </PixelPanel>
-
                   <PixelPanel tone="default" title="Cost" titleTone="gold">
                     <div className="p-5 space-y-2 text-lg">
                       <div className="flex justify-between text-ink-muted">
-                        <span>{qty} × {PRICE_SOL} SOL</span>
-                        <span className="text-ink">
-                          {(qty * PRICE_SOL).toFixed(3)} SOL
-                        </span>
+                        <span>Mint price</span>
+                        <span className="text-ink">{PRICE_SOL} SOL</span>
                       </div>
                       <div className="flex justify-between text-ink-muted">
                         <span>Network fee</span>
@@ -230,7 +160,22 @@ export default function MintPage() {
                       <div className="border-t-[3px] border-stroke my-3" />
                       <div className="flex justify-between font-display text-ink text-sm">
                         <span>Total</span>
-                        <span>{(qty * PRICE_SOL).toFixed(3)} SOL</span>
+                        <span>{PRICE_SOL} SOL</span>
+                      </div>
+                    </div>
+                  </PixelPanel>
+
+                  <PixelPanel tone="default" title="You receive" titleTone="green">
+                    <div className="p-5 grid grid-cols-2 gap-4 text-center">
+                      <div className="bg-bg-sunk pixel-border-tight p-3 flex flex-col items-center gap-1">
+                        <PixelIcon name="bolt" className="w-10 h-10" />
+                        <div className="font-display text-ink text-xs">+4</div>
+                        <div className="text-ink-muted text-base">Energy</div>
+                      </div>
+                      <div className="bg-bg-sunk pixel-border-tight p-3 flex flex-col items-center gap-1">
+                        <PixelIcon name="key" className="w-10 h-10" />
+                        <div className="font-display text-ink text-xs">+1</div>
+                        <div className="text-ink-muted text-base">Key</div>
                       </div>
                     </div>
                   </PixelPanel>
@@ -250,47 +195,43 @@ export default function MintPage() {
                   </PixelButton>
 
                   <p className="text-ink-dim text-base leading-snug">
-                    Devnet build. Stats and rarity shown are simulated. Real
-                    on-chain mint lands when the program ships.
+                    Devnet build. Real on-chain mint lands when the program ships.
                   </p>
                 </>
               ) : (
-                roll && (
+                revealed && (
                   <>
                     <PixelPanel
                       tone="default"
-                      title="Stats rolled"
-                      titleTone={RARITY_TONE[roll.rarity]}
+                      title="Saved to collection"
+                      titleTone={RARITY_TONE[revealed.rarity]}
                     >
-                      <ul className="p-5 space-y-3 text-lg">
-                        <Stat label="HP" value={roll.hp} max={STAT_MAX.hp} />
-                        <Stat label="ATK" value={roll.atk} max={STAT_MAX.atk} />
-                        <Stat label="DEF" value={roll.def} max={STAT_MAX.def} />
-                        <Stat label="SPD" value={roll.spd} max={STAT_MAX.spd} />
-                      </ul>
-                    </PixelPanel>
-
-                    <PixelPanel tone="default" title="Starter pack" titleTone="green">
-                      <div className="p-5 grid grid-cols-2 gap-4 text-center">
-                        <div className="bg-bg-sunk pixel-border-tight p-3 flex flex-col items-center gap-1">
-                          <PixelIcon name="bolt" className="w-10 h-10" />
-                          <div className="font-display text-ink text-xs">
-                            +4
-                          </div>
-                          <div className="text-ink-muted text-base">Energy</div>
+                      <div className="p-5 space-y-3 text-lg">
+                        <div className="flex justify-between text-ink-muted">
+                          <span>Pixmon</span>
+                          <span className="text-ink font-display text-xs">
+                            {revealed.name} #{revealed.number}
+                          </span>
                         </div>
-                        <div className="bg-bg-sunk pixel-border-tight p-3 flex flex-col items-center gap-1">
-                          <PixelIcon name="key" className="w-10 h-10" />
-                          <div className="font-display text-ink text-xs">
-                            +1
-                          </div>
-                          <div className="text-ink-muted text-base">Key</div>
+                        <div className="flex justify-between text-ink-muted">
+                          <span>ATK</span>
+                          <span className="text-ink tabular-nums">{revealed.baseAtk}</span>
+                        </div>
+                        <div className="flex justify-between text-ink-muted">
+                          <span>DEF</span>
+                          <span className="text-ink tabular-nums">{revealed.baseDef}</span>
                         </div>
                       </div>
                     </PixelPanel>
 
+                    <Link href="/collection" className="block">
+                      <PixelButton tone="cyan" size="lg" className="w-full">
+                        Open collection
+                      </PixelButton>
+                    </Link>
+
                     <PixelButton
-                      tone="cyan"
+                      tone="green"
                       size="lg"
                       className="w-full"
                       onClick={reset}
@@ -306,26 +247,5 @@ export default function MintPage() {
       </main>
       <Footer />
     </>
-  );
-}
-
-function Stat({ label, value, max }: { label: string; value: number; max: number }) {
-  const pct = Math.min(100, (value / max) * 100);
-  return (
-    <li className="flex items-center justify-between gap-3">
-      <span className="font-display text-[10px] uppercase text-ink-muted tracking-widest w-12">
-        {label}
-      </span>
-      <div className="flex-1 h-3 bg-bg-sunk border-[3px] border-stroke">
-        <div
-          className="h-full bg-sol-green"
-          style={{ width: `${pct}%` }}
-        />
-      </div>
-      <span className="font-display text-ink text-xs tabular-nums w-14 text-right">
-        {value}
-        <span className="text-ink-dim">/{max}</span>
-      </span>
-    </li>
   );
 }

@@ -1,4 +1,5 @@
-import { PixmonCard, type Rarity } from "@/components/PixmonCard";
+import { PixmonCard } from "@/components/PixmonCard";
+import type { Rarity } from "@/lib/game/types";
 
 type Spec = {
   name: string;

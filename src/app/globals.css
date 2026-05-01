@@ -238,6 +238,150 @@ a:focus-visible,
   pointer-events: none;
 }
 
+/* ===== Glass card vocabulary ===== */
+.glass-card {
+  position: relative;
+  isolation: isolate;
+  border-radius: 14px;
+  background: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(255, 255, 255, 0.18) 45%,
+    rgba(255, 255, 255, 0.32) 100%
+  );
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1.5px solid rgba(255, 255, 255, 0.7);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -1px 0 rgba(11, 0, 20, 0.08),
+    0 1px 0 rgba(255, 255, 255, 0.5),
+    0 14px 30px -10px rgba(11, 0, 20, 0.25),
+    0 4px 10px -4px rgba(11, 0, 20, 0.15);
+  transition: box-shadow 220ms ease-out;
+}
+
+.glass-card-glow-common {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -1px 0 rgba(11, 0, 20, 0.08),
+    0 14px 30px -10px rgba(11, 0, 20, 0.25),
+    0 4px 10px -4px rgba(11, 0, 20, 0.15);
+}
+.glass-card-glow-rare {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 rgba(11, 0, 20, 0.08),
+    0 0 0 1.5px rgba(94, 231, 255, 0.55),
+    0 14px 36px -8px rgba(6, 182, 212, 0.45),
+    0 4px 12px -4px rgba(6, 182, 212, 0.35);
+}
+.glass-card-glow-epic {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 rgba(11, 0, 20, 0.08),
+    0 0 0 1.5px rgba(153, 69, 255, 0.55),
+    0 14px 36px -8px rgba(153, 69, 255, 0.5),
+    0 4px 14px -4px rgba(255, 46, 136, 0.35);
+}
+.glass-card-glow-legendary {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(11, 0, 20, 0.08),
+    0 0 0 1.5px rgba(255, 183, 0, 0.6),
+    0 16px 40px -8px rgba(255, 183, 0, 0.55),
+    0 4px 16px -4px rgba(255, 46, 136, 0.4);
+}
+
+/* edge highlight that catches the cursor */
+.glass-edge {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    150deg,
+    rgba(255, 255, 255, 0.6) 0%,
+    rgba(255, 255, 255, 0) 35%,
+    rgba(255, 255, 255, 0) 65%,
+    rgba(255, 255, 255, 0.35) 100%
+  );
+  mix-blend-mode: overlay;
+}
+
+/* the chamber where the sprite floats — gives depth on a light bg */
+.glass-chamber {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 50% 35%, rgba(255, 255, 255, 0.4), transparent 55%),
+    linear-gradient(180deg, rgba(11, 0, 20, 0.06) 0%, rgba(11, 0, 20, 0.18) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.45),
+    inset 0 12px 24px -10px rgba(11, 0, 20, 0.25),
+    inset 0 -8px 16px -8px rgba(11, 0, 20, 0.18);
+}
+
+.glass-chamber-rare {
+  background:
+    radial-gradient(circle at 50% 35%, rgba(94, 231, 255, 0.45), transparent 55%),
+    linear-gradient(180deg, rgba(2, 64, 95, 0.18) 0%, rgba(2, 24, 50, 0.4) 100%);
+}
+.glass-chamber-epic {
+  background:
+    radial-gradient(circle at 50% 35%, rgba(255, 46, 136, 0.4), transparent 55%),
+    linear-gradient(180deg, rgba(64, 12, 95, 0.25) 0%, rgba(24, 0, 50, 0.55) 100%);
+}
+.glass-chamber-legendary {
+  background:
+    radial-gradient(circle at 50% 35%, rgba(255, 215, 100, 0.5), transparent 55%),
+    linear-gradient(180deg, rgba(50, 20, 5, 0.25) 0%, rgba(20, 5, 0, 0.55) 100%);
+}
+
+/* prismatic conic for legendary */
+@keyframes prism-spin {
+  to { transform: rotate(360deg); }
+}
+.glass-prism {
+  position: absolute;
+  inset: -40%;
+  pointer-events: none;
+  background: conic-gradient(
+    from 0deg,
+    #ff2e88,
+    #ffb700,
+    #14f195,
+    #5ee7ff,
+    #9945ff,
+    #ff2e88
+  );
+  filter: blur(18px);
+  opacity: 0.55;
+  mix-blend-mode: screen;
+  animation: prism-spin 9s linear infinite;
+}
+
+/* lift on hover */
+.glass-lift {
+  transition: transform 220ms ease-out, box-shadow 220ms ease-out;
+}
+.glass-lift:hover {
+  transform: translateY(-3px);
+}
+
+/* a glassy chip for the HUD / pills inside cards */
+.glass-chip {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 2px 6px -2px rgba(11, 0, 20, 0.18);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .blink, .bob, .wiggle, .ticker-track,
   .holo-rainbow, .holo-sheen-band, .holo-spark {

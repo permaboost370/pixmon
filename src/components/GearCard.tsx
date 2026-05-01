@@ -7,35 +7,27 @@ import {
   type MouseEvent,
   type ReactNode,
 } from "react";
-import { PixelMon } from "@/components/PixelMon";
 import { PixelIcon, type IconName } from "@/components/PixelIcon";
 import { cn } from "@/lib/cn";
-import type { Rarity, GearSlot } from "@/lib/game/types";
+import type { GearSlot, Item, Rarity } from "@/lib/game/types";
 
 type Size = "sm" | "md" | "lg";
 
-type EquippedChip = { name: string; slot: GearSlot; rarity: Rarity };
-
 type Props = {
-  species: number;
-  name: string;
-  rarity: Rarity;
-  number?: number | string;
-  stats?: { atk: number; def: number };
-  evolved?: boolean;
-  equipped?: EquippedChip | null;
+  item: Item;
   size?: Size;
   interactive?: boolean;
   selected?: boolean;
+  equippedToName?: string | null;
   footer?: ReactNode;
   className?: string;
   onClick?: () => void;
 };
 
-const SIZE: Record<Size, { wrap: string; sprite: string; pad: string; nameSize: string }> = {
-  sm: { wrap: "w-[180px]",  sprite: "w-24",  pad: "p-3",  nameSize: "text-[10px]" },
-  md: { wrap: "w-[240px]",  sprite: "w-36",  pad: "p-4",  nameSize: "text-xs" },
-  lg: { wrap: "w-[300px]",  sprite: "w-48",  pad: "p-5",  nameSize: "text-sm" },
+const SIZE: Record<Size, { wrap: string; icon: string; pad: string; nameSize: string }> = {
+  sm: { wrap: "w-[160px]", icon: "w-16",  pad: "p-3", nameSize: "text-[9px]" },
+  md: { wrap: "w-[220px]", icon: "w-24",  pad: "p-4", nameSize: "text-[10px]" },
+  lg: { wrap: "w-[280px]", icon: "w-32",  pad: "p-5", nameSize: "text-xs" },
 };
 
 const GLOW: Record<Rarity, string> = {
@@ -80,17 +72,19 @@ const SLOT_ICON: Record<GearSlot, IconName> = {
   spark: "spark",
 };
 
-export function PixmonCard({
-  species,
-  name,
-  rarity,
-  number,
-  stats,
-  evolved,
-  equipped,
+const SLOT_LABEL: Record<GearSlot, string> = {
+  sword: "Sword",
+  shield: "Shield",
+  boot: "Boots",
+  spark: "Charm",
+};
+
+export function GearCard({
+  item,
   size = "md",
   interactive = true,
   selected = false,
+  equippedToName,
   footer,
   className,
   onClick,
@@ -126,8 +120,8 @@ export function PixmonCard({
       }
     : {};
 
-  const showSheen = rarity === "epic" || rarity === "legendary";
-  const isLegendary = rarity === "legendary";
+  const isLegendary = item.rarity === "legendary";
+  const showSheen = item.rarity === "epic" || isLegendary;
 
   return (
     <div
@@ -138,9 +132,9 @@ export function PixmonCard({
       style={tiltStyle}
       className={cn(
         "glass-card glass-lift",
-        GLOW[rarity],
+        GLOW[item.rarity],
         sizing.wrap,
-        selected && cn("ring-4 ring-offset-2 ring-offset-bg", RARITY_RING[rarity]),
+        selected && cn("ring-4 ring-offset-2 ring-offset-bg", RARITY_RING[item.rarity]),
         onClick && "cursor-pointer",
         className,
       )}
@@ -148,7 +142,7 @@ export function PixmonCard({
       <span className="glass-edge" aria-hidden />
 
       <div className={cn(sizing.pad, "relative")}>
-        <div className={cn(CHAMBER[rarity], "aspect-[4/3] flex items-center justify-center")}>
+        <div className={cn(CHAMBER[item.rarity], "aspect-[4/3] flex items-center justify-center")}>
           {isLegendary && <span className="glass-prism" aria-hidden />}
           {showSheen && <span className="holo-sheen-band" aria-hidden />}
           <span
@@ -159,58 +153,46 @@ export function PixmonCard({
             }}
             aria-hidden
           />
-
           <div className="bob relative z-10">
-            <PixelMon
-              species={species}
-              className={cn("drop-shadow-[3px_3px_0_rgba(0,0,0,0.4)]", sizing.sprite)}
+            <PixelIcon
+              name={SLOT_ICON[item.slot]}
+              className={cn("drop-shadow-[3px_3px_0_rgba(0,0,0,0.4)]", sizing.icon)}
             />
           </div>
 
-          {number !== undefined && (
-            <div className="absolute top-2 left-2 z-20 glass-chip font-display text-[8px] uppercase tracking-widest text-ink px-1.5 py-1 rounded">
-              #{number}
-            </div>
-          )}
+          <div className="absolute top-2 left-2 z-20 glass-chip font-display text-[8px] uppercase tracking-widest text-ink px-1.5 py-1 rounded">
+            {SLOT_LABEL[item.slot]}
+          </div>
 
           <div className="absolute top-2 right-2 z-20">
             <span
               className={cn(
                 "inline-flex items-center gap-1 font-display text-[8px] uppercase tracking-widest px-1.5 py-1 rounded border border-white/60",
-                RARITY_PILL[rarity],
+                RARITY_PILL[item.rarity],
               )}
             >
               <PixelIcon name={isLegendary ? "crown" : "spark"} className="w-3 h-3" />
-              <span>{RARITY_LABEL[rarity]}</span>
+              <span>{RARITY_LABEL[item.rarity]}</span>
             </span>
           </div>
 
-          {evolved && (
-            <div className="absolute bottom-2 left-2 z-20 glass-chip flex items-center gap-1 font-display text-[8px] uppercase tracking-widest text-sol-purple px-1.5 py-1 rounded">
-              <PixelIcon name="spark" className="w-3 h-3" color="#9945ff" />
-              <span>Evolved</span>
-            </div>
-          )}
-
-          {equipped && (
-            <div className="absolute bottom-2 right-2 z-20 glass-chip flex items-center gap-1 font-display text-[8px] uppercase tracking-widest text-ink px-1.5 py-1 rounded">
-              <PixelIcon name={SLOT_ICON[equipped.slot]} className="w-3 h-3" />
-              <span className="max-w-[60px] truncate">{equipped.name}</span>
+          {equippedToName && (
+            <div className="absolute bottom-2 left-2 right-2 z-20 glass-chip flex items-center justify-center gap-1 font-display text-[8px] uppercase tracking-widest text-sol-purple px-1.5 py-1 rounded">
+              <PixelIcon name="lock" className="w-3 h-3" />
+              <span className="truncate">on {equippedToName}</span>
             </div>
           )}
         </div>
 
         <div className="mt-3">
           <div className={cn("font-display text-ink uppercase truncate", sizing.nameSize)}>
-            {name}
+            {item.name}
           </div>
 
-          {stats && (
-            <div className="mt-3 grid grid-cols-2 gap-3">
-              <StatPip label="ATK" value={stats.atk} max={60} tone="bg-pix-pink" />
-              <StatPip label="DEF" value={stats.def} max={50} tone="bg-sol-green" />
-            </div>
-          )}
+          <div className="mt-3 grid grid-cols-2 gap-2 font-display text-[8px] uppercase tracking-widest">
+            <BoostPip label="ATK" flat={item.atkFlat} pct={item.atkPct} tone="text-pix-pink" />
+            <BoostPip label="DEF" flat={item.defFlat} pct={item.defPct} tone="text-sol-green-dark" />
+          </div>
 
           {footer && <div className="mt-3">{footer}</div>}
         </div>
@@ -219,27 +201,30 @@ export function PixmonCard({
   );
 }
 
-function StatPip({
+function BoostPip({
   label,
-  value,
-  max,
+  flat,
+  pct,
   tone,
 }: {
   label: string;
-  value: number;
-  max: number;
+  flat: number;
+  pct: number;
   tone: string;
 }) {
-  const pct = Math.min(100, (value / max) * 100);
+  const empty = flat === 0 && pct === 0;
   return (
-    <div>
-      <div className="flex justify-between font-display text-[8px] uppercase tracking-widest text-ink-muted">
-        <span>{label}</span>
-        <span className="text-ink tabular-nums">{value}</span>
-      </div>
-      <div className="mt-1 h-1.5 bg-white/40 rounded border border-white/70 overflow-hidden">
-        <div className={cn("h-full", tone)} style={{ width: `${pct}%` }} />
-      </div>
+    <div className="glass-chip rounded px-2 py-1.5">
+      <div className="text-ink-muted">{label}</div>
+      {empty ? (
+        <div className="text-ink-dim mt-0.5">—</div>
+      ) : (
+        <div className={cn("mt-0.5 tabular-nums", tone)}>
+          {flat > 0 && <span>+{flat}</span>}
+          {flat > 0 && pct > 0 && <span className="text-ink-muted"> · </span>}
+          {pct > 0 && <span>+{pct}%</span>}
+        </div>
+      )}
     </div>
   );
 }
